@@ -1,7 +1,12 @@
-import type { NetworkEvent } from '../types';
+import type { NetworkEvent, RiskSignal } from '../types';
 import { getRegistrableDomain } from '../utils/domain';
-import { saveNetworkEvent } from '../storage/storage';
+import { getCrossSiteMap, recordCrossSiteContact, saveNetworkEvent } from '../storage/storage';
 import { classify } from '../classifier/classifier';
+import {
+  buildCrossSitePresenceSignal,
+  buildKnownTrackerSignal,
+  detectTrackingParameterSignals,
+} from '../classifier/risk-signals';
 
 // Observation only (CLAUDE.md 6.4) — chrome.webRequest is never used to
 // block here. Blocking is a separate, later concern handled through
@@ -23,21 +28,22 @@ export function registerRequestObserver(): void {
 }
 
 function handleBeforeRequest(details: chrome.webRequest.WebRequestBodyDetails): void {
-  try {
-    const event = toThirdPartyEvent(details);
-    if (!event) return;
-
-    saveNetworkEvent(event).catch((error) => {
-      console.error('[request-observer] Failed to save network event', error);
+  toThirdPartyEvent(details)
+    .then((event) => {
+      if (!event) return;
+      return saveNetworkEvent(event);
+    })
+    .catch((error) => {
+      // Metadata extraction and storage must never take down the listener —
+      // a single malformed or failed request should not stop future
+      // requests from being observed.
+      console.error('[request-observer] Failed to process request', error);
     });
-  } catch (error) {
-    // Metadata extraction must never take down the listener — a single
-    // malformed request should not stop future requests from being observed.
-    console.error('[request-observer] Failed to process request', error);
-  }
 }
 
-function toThirdPartyEvent(details: chrome.webRequest.WebRequestBodyDetails): NetworkEvent | null {
+async function toThirdPartyEvent(
+  details: chrome.webRequest.WebRequestBodyDetails,
+): Promise<NetworkEvent | null> {
   if (IGNORED_REQUEST_TYPES.has(details.type)) return null;
 
   // No initiator (or an opaque "null" initiator) means the originating page
@@ -52,6 +58,7 @@ function toThirdPartyEvent(details: chrome.webRequest.WebRequestBodyDetails): Ne
   if (!isThirdParty) return null;
 
   const { category, knownTracker } = classify(destinationDomain);
+  const riskSignals = await computeRiskSignals(details.url, destinationDomain, sourceSite, knownTracker);
 
   return {
     id: crypto.randomUUID(),
@@ -62,8 +69,28 @@ function toThirdPartyEvent(details: chrome.webRequest.WebRequestBodyDetails): Ne
     isThirdParty: true,
     category,
     knownTracker,
-    // Risk signals land in a later phase.
-    riskSignals: [],
+    riskSignals,
     blocked: false,
   };
+}
+
+async function computeRiskSignals(
+  url: string,
+  destinationDomain: string,
+  sourceSite: string,
+  knownTracker: boolean,
+): Promise<RiskSignal[]> {
+  // The cross-site map is persisted through the storage module (CLAUDE.md
+  // 6.3) — nothing about "which sites have contacted this destination"
+  // lives only in this module's memory, so a service worker restart never
+  // loses it.
+  await recordCrossSiteContact(destinationDomain, sourceSite);
+  const crossSiteMap = await getCrossSiteMap();
+  const sourceSiteCount = crossSiteMap[destinationDomain]?.length ?? 0;
+
+  return [
+    ...detectTrackingParameterSignals(url),
+    ...buildKnownTrackerSignal(knownTracker),
+    ...buildCrossSitePresenceSignal(sourceSiteCount),
+  ];
 }

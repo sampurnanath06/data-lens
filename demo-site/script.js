@@ -42,7 +42,7 @@
 
     // Advertising — image pixel carrying a gclid tracking parameter.
     firePixel(
-      'https://ad.doubleclick.net/ddm/trackimp/N123.456thedailybyte/B0.0;dc_trk_aid=1;gclid=Tester_gclid_abc123',
+      'https://ad.doubleclick.net/ddm/trackimp/N123.456thedailybyte/B0.0?dc_trk_aid=1&gclid=Tester_gclid_abc123',
       'doubleclick.net (Advertising, gclid)'
     );
 
