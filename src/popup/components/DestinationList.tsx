@@ -3,9 +3,11 @@ import { CategoryBadge } from './CategoryBadge';
 
 export function DestinationList({
   destinations,
+  blockedDomains,
   onSelect,
 }: {
   destinations: DestinationSummary[];
+  blockedDomains: string[];
   onSelect: (domain: string) => void;
 }) {
   if (destinations.length === 0) {
@@ -23,6 +25,11 @@ export function DestinationList({
           <button className="destination-row" onClick={() => onSelect(destination.domain)}>
             <span className="destination-domain">{destination.domain}</span>
             <span className="destination-meta">
+              {blockedDomains.includes(destination.domain) && (
+                <span className="blocked-indicator" title="Data Lens is blocking requests to this destination">
+                  Blocked
+                </span>
+              )}
               <CategoryBadge category={destination.category} />
               {destination.hasRiskSignal && (
                 <span className="signal-indicator" title="Risk signals observed for this destination">

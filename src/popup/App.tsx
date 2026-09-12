@@ -1,6 +1,12 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { NetworkEvent } from '../types';
-import { clearAll, getCrossSiteMap, getEventsForSite, seedFixtures } from '../storage/storage';
+import {
+  clearAll,
+  getBlockedDestinations,
+  getCrossSiteMap,
+  getEventsForSite,
+  seedFixtures,
+} from '../storage/storage';
 import { getCurrentSiteDomain } from './lib/site';
 import { aggregateDestinations, collectRiskSignals, countByCategory } from './lib/aggregate';
 import { MainView } from './components/MainView';
@@ -24,21 +30,31 @@ export default function App() {
   const [site, setSite] = useState<string | null>(null);
   const [events, setEvents] = useState<NetworkEvent[]>([]);
   const [crossSiteMap, setCrossSiteMap] = useState<Record<string, string[]>>({});
+  const [blockedDomains, setBlockedDomains] = useState<string[]>([]);
   const [selectedDomain, setSelectedDomain] = useState<string | null>(null);
 
   const loadForSite = useCallback(async (targetSite: string | null) => {
     setLoading(true);
     setSelectedDomain(null);
     try {
-      const [siteEvents, map] = await Promise.all([
+      const [siteEvents, map, blocked] = await Promise.all([
         targetSite ? getEventsForSite(targetSite) : Promise.resolve([]),
         getCrossSiteMap(),
+        getBlockedDestinations(),
       ]);
       setEvents(siteEvents);
       setCrossSiteMap(map);
+      setBlockedDomains(blocked);
     } finally {
       setLoading(false);
     }
+  }, []);
+
+  // Blocked state can change without the rest of the data changing (the
+  // user just blocked/unblocked something in the detail view) — a cheap
+  // standalone refresh avoids re-fetching events/crossSiteMap for that.
+  const refreshBlockedDomains = useCallback(async () => {
+    setBlockedDomains(await getBlockedDestinations());
   }, []);
 
   const loadLiveSite = useCallback(async () => {
@@ -90,6 +106,8 @@ export default function App() {
             destination={selectedDestination}
             riskSignals={collectRiskSignals(events, selectedDestination.domain)}
             crossSiteSites={crossSiteMap[selectedDestination.domain] ?? []}
+            isBlocked={blockedDomains.includes(selectedDestination.domain)}
+            onBlockChange={refreshBlockedDomains}
             onBack={() => setSelectedDomain(null)}
           />
         ) : site ? (
@@ -99,6 +117,7 @@ export default function App() {
             total={events.length}
             categoryCounts={categoryCounts}
             destinations={destinations}
+            blockedDomains={blockedDomains}
             onSelectDestination={setSelectedDomain}
           />
         ) : (

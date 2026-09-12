@@ -9,6 +9,7 @@ export function MainView({
   total,
   categoryCounts,
   destinations,
+  blockedDomains,
   onSelectDestination,
 }: {
   siteLabel: string;
@@ -16,6 +17,7 @@ export function MainView({
   total: number;
   categoryCounts: Record<Category, number>;
   destinations: DestinationSummary[];
+  blockedDomains: string[];
   onSelectDestination: (domain: string) => void;
 }) {
   return (
@@ -28,7 +30,11 @@ export function MainView({
       <StatsSummary total={total} categoryCounts={categoryCounts} />
 
       <h2 className="section-heading">Third-party destinations</h2>
-      <DestinationList destinations={destinations} onSelect={onSelectDestination} />
+      <DestinationList
+        destinations={destinations}
+        blockedDomains={blockedDomains}
+        onSelect={onSelectDestination}
+      />
     </div>
   );
 }

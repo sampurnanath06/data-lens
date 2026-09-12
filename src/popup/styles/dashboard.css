@@ -216,6 +216,18 @@ body {
   padding: 2px 6px;
 }
 
+.blocked-indicator {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 700;
+  color: #fff;
+  background: var(--ink);
+  border-radius: 4px;
+  padding: 2px 6px;
+  white-space: nowrap;
+}
+
 /* ---------- Category badge ---------- */
 
 .category-badge {
@@ -397,8 +409,41 @@ body {
 }
 
 .block-button {
-  cursor: not-allowed;
-  color: var(--muted);
+  cursor: pointer;
+}
+
+.block-button:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.block-button--block {
+  color: var(--ink);
+  border-color: var(--border-strong);
+}
+
+.block-button--block:hover:not(:disabled) {
+  background: var(--paper);
+}
+
+.block-button--unblock {
+  color: #fff;
+  background: var(--ink);
+  border-color: var(--ink);
+}
+
+.block-button--unblock:hover:not(:disabled) {
+  background: #000;
+}
+
+.block-error {
+  margin: 10px 0 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--signal-fg);
+  background: var(--signal-bg);
+  border-radius: 6px;
+  padding: 8px 10px;
 }
 
 .explain-button {
