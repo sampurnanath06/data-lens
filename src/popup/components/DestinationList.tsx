@@ -13,36 +13,51 @@ export function DestinationList({
   if (destinations.length === 0) {
     return (
       <div className="empty-state">
-        No third-party requests observed for this site yet.
+        <span className="empty-state-glyph" aria-hidden="true">
+          ◇
+        </span>
+        <p className="empty-state-title">No third-party requests yet</p>
+        <p className="empty-state-body">
+          Browse this site normally and reopen Data Lens — requests are recorded as they happen.
+        </p>
       </div>
     );
   }
 
   return (
     <ul className="destination-list">
-      {destinations.map((destination) => (
-        <li key={destination.domain}>
-          <button className="destination-row" onClick={() => onSelect(destination.domain)}>
-            <span className="destination-domain">{destination.domain}</span>
-            <span className="destination-meta">
-              {blockedDomains.includes(destination.domain) && (
-                <span className="blocked-indicator" title="Data Lens is blocking requests to this destination">
-                  Blocked
+      {destinations.map((destination) => {
+        const isBlocked = blockedDomains.includes(destination.domain);
+        return (
+          <li key={destination.domain}>
+            <button
+              className={isBlocked ? 'destination-row destination-row--blocked' : 'destination-row'}
+              onClick={() => onSelect(destination.domain)}
+            >
+              <span className="destination-domain">{destination.domain}</span>
+              <span className="destination-meta">
+                {isBlocked && (
+                  <span
+                    className="blocked-indicator"
+                    title="Data Lens is blocking requests to this destination"
+                  >
+                    Blocked
+                  </span>
+                )}
+                <CategoryBadge category={destination.category} />
+                {destination.hasRiskSignal && (
+                  <span className="signal-indicator" title="Risk signals observed for this destination">
+                    signals
+                  </span>
+                )}
+                <span className="destination-count">
+                  {destination.requestCount} request{destination.requestCount === 1 ? '' : 's'}
                 </span>
-              )}
-              <CategoryBadge category={destination.category} />
-              {destination.hasRiskSignal && (
-                <span className="signal-indicator" title="Risk signals observed for this destination">
-                  signals
-                </span>
-              )}
-              <span className="destination-count">
-                {destination.requestCount} request{destination.requestCount === 1 ? '' : 's'}
               </span>
-            </span>
-          </button>
-        </li>
-      ))}
+            </button>
+          </li>
+        );
+      })}
     </ul>
   );
 }

@@ -1,6 +1,11 @@
 import type { NetworkEvent, RiskSignal } from '../types';
 import { getRegistrableDomain } from '../utils/domain';
-import { getCrossSiteMap, recordCrossSiteContact, saveNetworkEvent } from '../storage/storage';
+import {
+  getBlockedDestinations,
+  getCrossSiteMap,
+  recordCrossSiteContact,
+  saveNetworkEvent,
+} from '../storage/storage';
 import { classify } from '../classifier/classifier';
 import {
   buildCrossSitePresenceSignal,
@@ -58,7 +63,10 @@ async function toThirdPartyEvent(
   if (!isThirdParty) return null;
 
   const { category, knownTracker } = classify(destinationDomain);
-  const riskSignals = await computeRiskSignals(details.url, destinationDomain, sourceSite, knownTracker);
+  const [riskSignals, blockedDestinations] = await Promise.all([
+    computeRiskSignals(details.url, destinationDomain, sourceSite, knownTracker),
+    getBlockedDestinations(),
+  ]);
 
   return {
     id: crypto.randomUUID(),
@@ -70,7 +78,11 @@ async function toThirdPartyEvent(
     category,
     knownTracker,
     riskSignals,
-    blocked: false,
+    // declarativeNetRequest blocks the request after this event is already
+    // being recorded (onBeforeRequest fires regardless of what happens
+    // next), so this reflects "was this destination blocked at the time of
+    // this attempt" rather than "did this specific request complete."
+    blocked: blockedDestinations.includes(destinationDomain),
   };
 }
 

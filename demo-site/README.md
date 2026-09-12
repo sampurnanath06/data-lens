@@ -40,13 +40,23 @@ On page load, `script.js` fires a fixed set of third-party requests to real,
 recognizable tracker/CDN domains (chosen so they classify correctly against
 the WhoTracks.me dataset instead of falling back to `Unknown`):
 
-| Destination | Category | Request type | Tracking parameter |
+| Destination | Category (per the bundled dataset) | Request type | Tracking parameter |
 |---|---|---|---|
 | `www.google-analytics.com` | Analytics | image pixel | — |
 | `ad.doubleclick.net` | Advertising | image pixel | `gclid` |
-| `connect.facebook.net` | Social | script (real `fbevents.js`) | `fbclid` |
+| `connect.facebook.net` | Advertising | script (real `fbevents.js`) | `fbclid` |
 | `cdnjs.cloudflare.com` | CDN | script (real `dayjs` library, actually loads) | — |
 | `sb.scorecardresearch.com` | Analytics | fetch/beacon | `utm_source` |
+
+Note: `connect.facebook.net` classifies as **Advertising**, not Social, in
+the real WhoTracks.me/TrackerDB dataset — it's filed under the Facebook
+Pixel (ad conversion tracking) tracker, not the social-widget one. That's
+the dataset's own call, not a bug in this demo; genuine `social_media`-
+category examples in the dataset include `twitter.com` and `pinterest.com`,
+which this fixed demo set doesn't happen to touch. So this demo currently
+demonstrates four of the six categories live (Advertising, Analytics, CDN,
+and — for any domain outside the dataset — Unknown); Social and Other are
+covered by `src/fixtures/sample-events.ts` instead.
 
 These requests are expected to fail, get blocked by Chrome, or return
 non-200 responses in some cases (e.g. the tracking pixels use made-up

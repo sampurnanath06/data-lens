@@ -43,9 +43,12 @@ body {
 }
 
 .app-header {
-  padding: 14px 16px 12px;
+  padding: 13px 16px 11px;
   border-bottom: 1px solid var(--border);
   background: var(--card);
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
 }
 
 .app-title {
@@ -54,19 +57,73 @@ body {
   letter-spacing: -0.01em;
 }
 
+.app-subtitle {
+  font-size: 11px;
+  color: var(--muted);
+}
+
 .app-body {
   flex: 1;
   overflow-y: auto;
   min-height: 200px;
 }
 
-.loading-state,
-.empty-state {
-  padding: 32px 20px;
+.loading-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 48px 20px;
   color: var(--muted);
   font-size: 13px;
-  line-height: 1.5;
+}
+
+.loading-pulse {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--muted);
+  animation: loading-pulse 1.1s ease-in-out infinite;
+}
+
+@keyframes loading-pulse {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: scale(0.85);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.empty-state {
+  padding: 40px 24px;
   text-align: center;
+}
+
+.empty-state-glyph {
+  display: block;
+  font-size: 22px;
+  color: var(--border-strong);
+  margin-bottom: 10px;
+}
+
+.empty-state-title {
+  margin: 0 0 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+
+.empty-state-body {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--muted);
+  max-width: 30ch;
+  margin-inline: auto;
 }
 
 /* ---------- Main view ---------- */
@@ -184,6 +241,14 @@ body {
   background: var(--paper);
 }
 
+.destination-row--blocked {
+  box-shadow: inset 3px 0 0 var(--ink);
+}
+
+.destination-row--blocked .destination-domain {
+  color: var(--ink-soft);
+}
+
 .destination-domain {
   font-size: 13px;
   font-weight: 500;
@@ -256,8 +321,14 @@ body {
   background: var(--cat-other);
 }
 .cat-unknown {
-  background: var(--cat-unknown);
-  color: #44403c;
+  background: transparent;
+  color: var(--ink-soft);
+  border: 1px dashed var(--border-strong);
+  /* Slightly narrower padding to compensate for the border, so this badge
+     lines up with the solid-filled ones next to it. Dashed + outlined
+     (rather than a solid fill like every classified category) reads as
+     "we deliberately have no data here," not "this one is broken." */
+  padding: 1px 6px;
 }
 
 /* ---------- Detail view ---------- */
@@ -503,8 +574,11 @@ body {
 }
 
 .source-badge--fallback {
-  background: #e4e4e7;
-  color: #3f3f46;
+  /* Deliberately given its own confident color identity rather than a
+     "disabled" gray — the fallback is a designed, first-class path, not a
+     degraded one (CLAUDE.md section 11). */
+  background: #e0e7ff;
+  color: #3730a3;
 }
 
 .explanation-text {

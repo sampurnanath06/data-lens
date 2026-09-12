@@ -76,7 +76,7 @@ export function DetailView({
     setBlockError(
       wasBlocked
         ? `Data Lens could not confirm this destination was unblocked (${reason}). It may still be blocked.`
-        : `This destination has been marked suspicious, but Data Lens could not create a blocking rule for it (${reason}).`,
+        : `Your request to block this destination has been noted, but Data Lens could not confirm the blocking rule with Chrome (${reason}). Requests to it may still go through.`,
     );
   };
 

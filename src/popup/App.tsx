@@ -96,11 +96,15 @@ export default function App() {
     <div className="app">
       <header className="app-header">
         <span className="app-title">Data Lens</span>
+        <span className="app-subtitle">Third-party request observer</span>
       </header>
 
       <main className="app-body">
         {loading ? (
-          <div className="loading-state">Loading…</div>
+          <div className="loading-state">
+            <span className="loading-pulse" aria-hidden="true" />
+            Loading…
+          </div>
         ) : selectedDestination ? (
           <DetailView
             destination={selectedDestination}
@@ -122,8 +126,14 @@ export default function App() {
           />
         ) : (
           <div className="empty-state">
-            Data Lens can't detect a site for this tab. Open a website in this window, or load sample
-            data below to explore the dashboard.
+            <span className="empty-state-glyph" aria-hidden="true">
+              ◇
+            </span>
+            <p className="empty-state-title">No site detected for this tab</p>
+            <p className="empty-state-body">
+              Open a website in this window and reopen Data Lens, or load sample data below to explore
+              the dashboard without one.
+            </p>
           </div>
         )}
       </main>
