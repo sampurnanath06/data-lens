@@ -10,5 +10,6 @@
     "service_worker": "service-worker.js",
     "type": "module"
   },
-  "permissions": ["storage"]
+  "permissions": ["storage", "webRequest"],
+  "host_permissions": ["<all_urls>"]
 }

@@ -3,6 +3,10 @@
 // async function, callback, or after an await — or it stops firing once the
 // worker is terminated and restarted.
 
+import { registerRequestObserver } from './request-observer';
+
 chrome.runtime.onInstalled.addListener(() => {
   console.log('[Data Lens] service worker installed');
 });
+
+registerRequestObserver();

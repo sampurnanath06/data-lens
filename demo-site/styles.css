@@ -1,0 +1,153 @@
+:root {
+  --ink: #1a1a1a;
+  --muted: #5c5c5c;
+  --rule: #ddd8cf;
+  --paper: #fbfaf7;
+  --accent: #8a1f1f;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  line-height: 1.55;
+}
+
+.wrap {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.site-header {
+  border-bottom: 3px solid var(--ink);
+  padding-top: 22px;
+}
+
+.header-inner {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-bottom: 14px;
+}
+
+.logo {
+  font-size: 2.1rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.site-nav {
+  display: flex;
+  gap: 18px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.site-nav a {
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.site-nav a:hover {
+  color: var(--ink);
+}
+
+.dateline {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 0.75rem;
+  color: var(--muted);
+  padding-bottom: 8px;
+}
+
+main {
+  padding-top: 28px;
+  padding-bottom: 40px;
+}
+
+.tag {
+  display: inline-block;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  margin-bottom: 8px;
+}
+
+.tag--tech { color: #2a5c8a; }
+.tag--business { color: #2a7a4d; }
+.tag--science { color: #6a3a9e; }
+.tag--opinion { color: #8a5a1f; }
+.tag--world { color: var(--accent); }
+
+.lead-story {
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 28px;
+  margin-bottom: 28px;
+}
+
+.lead-story h1 {
+  font-size: 2.3rem;
+  line-height: 1.15;
+  margin: 0 0 10px;
+}
+
+.byline {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin: 0 0 12px;
+}
+
+.lead-text {
+  font-size: 1.1rem;
+  max-width: 70ch;
+}
+
+.article-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 28px;
+}
+
+.card {
+  border-top: 1px solid var(--rule);
+  padding-top: 14px;
+}
+
+.card h2 {
+  font-size: 1.25rem;
+  line-height: 1.25;
+  margin: 0 0 8px;
+}
+
+.card p:not(.byline) {
+  color: #333;
+  font-size: 0.98rem;
+}
+
+.site-footer {
+  border-top: 3px solid var(--ink);
+  padding: 20px 0 30px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.fine-print {
+  font-size: 0.72rem;
+  color: #999;
+}
