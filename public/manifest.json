@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "Data Lens",
+  "version": "0.1.0",
+  "description": "Observes third-party network requests, classifies destinations, and explains privacy-relevant signals in plain English.",
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "service_worker": "service-worker.js",
+    "type": "module"
+  },
+  "permissions": ["storage"]
+}
